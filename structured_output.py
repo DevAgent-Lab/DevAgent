@@ -46,4 +46,52 @@ response = client.responses.parse(
 
 requirement = response.output_parsed
 
+class Task(BaseModel):
+    id: int
+    name: str
+    description: str
+
+class ProjectPlan(BaseModel):
+    tech_stack: list[str]
+    project_structure: list[str]
+    dependencies: list[str]
+    tasks: list[Task]
+
+plan_response = client.responses.parse(
+    model="gpt-5.6-luna",
+    instructions="""
+    You are the Planning step of DevAgent.
+    Create an implementation plan from the given requirements.
+    
+    You may now decide
+    - technical stack
+    - dependencies
+    - project structures
+    - implementation tasks
+    
+    Current DevAgent v0.1 supported stack:
+    - Java
+    - Spring Boot
+    - Gradle
+    - Spring Web
+    - Spring Data JPA
+    - H2
+    - JUnit
+    - REST API
+    
+    Rules:
+    - Stay within the currently supported stack.
+    - Use Gradle, not Maven.
+    - Keep the plan simple and appropriate for an MVP.
+    """,
+    input=requirement.model_dump_json(),
+    text_format=ProjectPlan,
+)
+
+plan = plan_response.output_parsed
+
+print("\n=== REQUIREMENT ===")
 print(requirement.model_dump_json(indent=2))
+
+print("\n=== PROJECT PLAN ===")
+print(plan.model_dump_json(indent=2))

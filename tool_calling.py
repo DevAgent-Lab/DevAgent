@@ -104,16 +104,22 @@ response = client.responses.create(
     The program must print exactly:
     Hello DevAgent
     
-    Use the available tools to create the file.
+    After creating the file, run it and verify the output.
+    Use the availavle tools.
     """,
     tools=TOOLS,
 )
 
-for item in response.output:
-    if item.type == "function_call":
+while True:
+    tool_outputs =[]
+
+    for item in response.output:
+        if item.type != "function_call":
+            continue
+
         arguments = json.loads(item.arguments)
 
-        print(f"Tool call: {item.name}")
+        print(f"\nTool call: {item.name}")
         print(f"Argument: {arguments}")
 
         result = execute_tool(
@@ -122,3 +128,26 @@ for item in response.output:
         )
 
         print(f"Result: {result}")
+
+        tool_outputs.append(
+            {
+                "type": "function_call_output",
+                "call_id": item.call_id,
+                "output": json.dumps(
+                    result,
+                    ensure_ascii=False,
+                )
+            }
+        )
+
+    if not tool_outputs:
+        print("\n=== FINAL ===")
+        print(response.output_text)
+        break
+
+    response = client.responses.create(
+        model="gpt-5.6-luna",
+        previous_response_id=response.id,
+        input=tool_outputs,
+        tools=TOOLS,
+    )

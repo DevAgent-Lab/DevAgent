@@ -96,6 +96,9 @@ def execute_tool(name: str, arguments: dict):
 
     raise ValueError(f"Unknown tool: {name}")
 
+MAX_STEPS = 5
+step = 0
+
 response = client.responses.create(
     model="gpt-5.6-luna",
     input="""
@@ -110,7 +113,10 @@ response = client.responses.create(
     tools=TOOLS,
 )
 
-while True:
+while step < MAX_STEPS:
+    step += 1
+    print(f"\n=== STEP {step} ===")
+
     tool_outputs =[]
 
     for item in response.output:
@@ -151,3 +157,6 @@ while True:
         input=tool_outputs,
         tools=TOOLS,
     )
+
+else :
+    print(f"\nAgent stopped: maximum step count ({MAX_STEPS}) reached.")

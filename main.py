@@ -1,12 +1,12 @@
-from dotenv import load_dotenv
-from openai import OpenAI
+from devagent.steps.requirement import create_requirement
 
-load_dotenv()
-client = OpenAI()
+def main():
+    user_prompt = input("무엇을 만들고 싶나요?\n> ")
 
-response = client.responses.create(
-    model="gpt-5-mini",
-    input="AI Agent를 한문장으로 설명해줘."
-)
+    requirement = create_requirement(user_prompt)
 
-print(response.output_text)
+    print("\n=== Requirement ===")
+    print(requirement.model_dump_json(indent=2))
+
+if __name__ == "__main__":
+    main()

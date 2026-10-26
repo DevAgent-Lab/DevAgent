@@ -1,9 +1,9 @@
 from openai import OpenAI
-from dotenv import load_dotenv
+
 from devagent.models.requirement import Requirement
 from devagent.prompts.requirement import REQUIREMENT_SYSTEM_PROMPT
 
-load_dotenv()
+
 client = OpenAI()
 
 def create_requirement(user_prompt: str) -> Requirement:
